@@ -1,11 +1,18 @@
-## My Project
+## AWS Go SDK examples for Amazon Bedrock
 
-TODO: Fill this README out!
+[Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-service.html) is a fully managed service that makes base models from Amazon and third-party model providers accessible through an API.
 
-Be sure to:
+Examples include:
 
-* Change the title in this README
-* Edit your repository description on GitHub
+- [Basic example](bedrock-basic) to invoke Bedrock API and list Foundation Models (FMs)
+- [Simple chatbot example](claude-chat) with Claude
+- [Handle streaming output](streaming-claude-basic) from LLMs
+- [Streaming chatbot example](claude-chat-streaming)
+- [Generate content](claude-content-generation) with Claude
+- [Extract info from text](claude-information-extraction) with Claude
+- Cohere example for [text generation](cohere-text-generation)
+- Stable Diffusion XL [example for image generation](stablediffusion-image-gen) with a prompt
+- [Convert text into Vector (embedding)](titan-text-embedding) with Amazon Titan
 
 ## Security
 
