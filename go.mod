@@ -3,7 +3,6 @@ module github.com/abhirockzz/amazon-bedrock-go-sdk-examples
 go 1.19
 
 require (
-	github.com/abhirockzz/amazon-bedrock-go-inference-params v0.0.0-20230930053247-b3d63e587849
 	github.com/aws/aws-sdk-go-v2 v1.21.0
 	github.com/aws/aws-sdk-go-v2/config v1.18.42
 	github.com/aws/aws-sdk-go-v2/service/bedrock v1.0.0

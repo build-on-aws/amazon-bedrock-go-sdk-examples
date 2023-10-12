@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/abhirockzz/amazon-bedrock-go-inference-params/cohere"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
@@ -19,9 +18,9 @@ const (
 	cohereCommandModelID = "cohere.command-text-v14" //https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html
 )
 
-const prompt1 = `Extract the band name from the contract:
+// const prompt1 = `Extract the band name from the contract:
 
-This Music Recording Agreement ("Agreement") is made effective as of the 13 day of December, 2021 by and between Good Kid, a Toronto-based musical group (“Artist”) and Universal Music Group, a record label with license number 545345 (“Recording Label"). Artist and Recording Label may each be referred to in this Agreement individually as a "Party" and collectively as the "Parties." Work under this Agreement shall begin on March 15, 2022.`
+// This Music Recording Agreement ("Agreement") is made effective as of the 13 day of December, 2021 by and between Good Kid, a Toronto-based musical group (“Artist”) and Universal Music Group, a record label with license number 545345 (“Recording Label"). Artist and Recording Label may each be referred to in this Agreement individually as a "Party" and collectively as the "Parties." Work under this Agreement shall begin on March 15, 2022.`
 
 const prompt = `Turn the following product feature into a list of benefits. Then, group this list of benefits into three types of benefits: Functional Benefits, Emotional Benefits, and Social Benefits.
 "Product Feature:
@@ -41,13 +40,13 @@ func main() {
 
 	brc := bedrockruntime.NewFromConfig(cfg)
 
-	payload := cohere.Request{
+	payload := Request{
 		Prompt:            prompt,
 		Temperature:       0.40,
 		P:                 0.75,
 		K:                 0,
 		MaxTokens:         200,
-		ReturnLikelihoods: cohere.None,
+		ReturnLikelihoods: None,
 	}
 
 	payloadBytes, err := json.Marshal(payload)
@@ -68,7 +67,7 @@ func main() {
 
 	//log.Println("raw response ", string(output.Body))
 
-	var resp cohere.Response
+	var resp Response
 
 	err = json.Unmarshal(output.Body, &resp)
 
@@ -78,4 +77,37 @@ func main() {
 
 	fmt.Println("response from LLM\n", resp.Generations[0].Text)
 
+}
+
+//request//response model
+
+type Request struct {
+	Prompt            string           `json:"prompt"`
+	Temperature       float64          `json:"temperature,omitempty"`
+	P                 float64          `json:"p,omitempty"`
+	K                 float64          `json:"k,omitempty"`
+	MaxTokens         int              `json:"max_tokens,omitempty"`
+	StopSequences     []string         `json:"stop_sequences,omitempty"`
+	ReturnLikelihoods ReturnLikelihood `json:"return_likelihoods,omitempty"`
+	Stream            bool             `json:"stream,omitempty"`
+	NumGenerations    int              `json:"num_generations,omitempty"`
+}
+
+type ReturnLikelihood string
+
+const (
+	Generation ReturnLikelihood = "GENERATION"
+	All        ReturnLikelihood = "ALL"
+	None       ReturnLikelihood = "NONE"
+)
+
+type ResponseGeneration struct {
+	ID   string `json:"id"`
+	Text string `json:"text"`
+}
+
+type Response struct {
+	Generations []ResponseGeneration `json:"generations"`
+	ID          string               `json:"id"`
+	Prompt      string               `json:"prompt"`
 }

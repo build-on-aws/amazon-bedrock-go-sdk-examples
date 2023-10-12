@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/abhirockzz/amazon-bedrock-go-inference-params/amazontitan/embedding"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
@@ -35,7 +34,7 @@ func main() {
 
 	input := os.Args[1]
 
-	payload := embedding.Request{
+	payload := Request{
 		InputText: input,
 	}
 
@@ -54,7 +53,7 @@ func main() {
 		log.Fatal("failed to invoke model: ", err)
 	}
 
-	var resp embedding.Response
+	var resp Response
 
 	err = json.Unmarshal(output.Body, &resp)
 
@@ -67,4 +66,15 @@ func main() {
 
 	fmt.Println("generated embedding for input -", input)
 	fmt.Println("generated vector length -", len(resp.Embedding))
+}
+
+//request/response model
+
+type Request struct {
+	InputText string `json:"inputText"`
+}
+
+type Response struct {
+	Embedding           []float64 `json:"embedding"`
+	InputTextTokenCount int       `json:"inputTextTokenCount"`
 }

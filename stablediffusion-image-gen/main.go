@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"time"
 
-	"github.com/abhirockzz/amazon-bedrock-go-inference-params/stabilityai"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
@@ -37,8 +37,8 @@ func main() {
 	prompt := os.Args[1]
 	fmt.Println("generating image based on prompt -", prompt)
 
-	payload := stabilityai.Request{
-		TextPrompts: []stabilityai.TextPrompt{{Text: prompt}},
+	payload := Request{
+		TextPrompts: []TextPrompt{{Text: prompt}},
 		CfgScale:    10,
 		Seed:        0,
 		Steps:       50,
@@ -59,7 +59,7 @@ func main() {
 		log.Fatal("failed to invoke model: ", err)
 	}
 
-	var resp stabilityai.Response
+	var resp Response
 
 	err = json.Unmarshal(output.Body, &resp)
 
@@ -83,4 +83,35 @@ func main() {
 
 	log.Println("image written to file", outputFile)
 
+}
+
+//request/response model
+
+type Request struct {
+	TextPrompts []TextPrompt `json:"text_prompts"`
+	CfgScale    float64      `json:"cfg_scale"`
+	Steps       int          `json:"steps"`
+	Seed        int          `json:"seed"`
+}
+
+type TextPrompt struct {
+	Text string `json:"text"`
+}
+
+type Response struct {
+	Result    string     `json:"result"`
+	Artifacts []Artifact `json:"artifacts"`
+}
+
+type Artifact struct {
+	Base64       string `json:"base64"`
+	FinishReason string `json:"finishReason"`
+}
+
+func (a *Artifact) DecodeImage() ([]byte, error) {
+	decoded, err := base64.StdEncoding.DecodeString(a.Base64)
+	if err != nil {
+		return nil, err
+	}
+	return decoded, nil
 }
